@@ -22,10 +22,6 @@ public class Line : MonoBehaviour
             AddStart();
             AddMiddle();
             AddEnd();
-            for(int i = 0; i < vertices.Count; i++)
-            {
-                Debug.Log(i + ": " + vertices[i]);
-            }
             SetMesh();
 
             oldPoints = new List<Vector2>(points);
@@ -67,39 +63,28 @@ public class Line : MonoBehaviour
         for(int i = 0; i < points.Count - 1; i++)
         {
             Vector2 lineIn = (points[i + 1] - points[i]).normalized;
-            Debug.Log(i + " in: " + lineIn);
             if (i != points.Count - 2)
             {
                 Vector2 lineOut = (points[i + 2] - points[i + 1]).normalized;
-                Debug.Log(i + " out: " + lineOut);
 
                 Vector2 toPoint = (-lineIn + lineOut).normalized;
                 if(toPoint.x == 0 && toPoint.y == 0)
                 {
                     toPoint = Vector2.Perpendicular(lineIn);
                 }
-                float m = lineIn.y / lineIn.x;
                 Vector2 point = points[i + 1] + toPoint;
-                //(x1, y1)
-                //y = mx + c
-                //y1 = mx1 + c
-                //c = y1 - mx1
-                float c = points[i + 1].y - m * points[i + 1].x;
-                //y = mx + c
-                
-                float lineInY = m * point.x + c;
-                if(point.y - lineInY > 0)
+
+                if (IsLeft(point - points[i], lineIn))
                 {
-                    vertices.Add(points[i + 1] - toPoint);
-                    vertices.Add(points[i + 1] + toPoint);
                     
+                    vertices.Add(points[i + 1] + toPoint);
+                    vertices.Add(points[i + 1] - toPoint);
                 }
                 else
                 {
-                    vertices.Add(points[i + 1] + toPoint);
                     vertices.Add(points[i + 1] - toPoint);
+                    vertices.Add(points[i + 1] + toPoint);
                 }
-                
             }
 
             if(points.Count == 2)
@@ -127,6 +112,11 @@ public class Line : MonoBehaviour
             }
             
         }
+    }
+
+    private bool IsLeft(Vector2 A, Vector2 B)
+    {
+        return -A.x * B.y + A.y * B.x < 0;
     }
     public void AddEnd()
     {
