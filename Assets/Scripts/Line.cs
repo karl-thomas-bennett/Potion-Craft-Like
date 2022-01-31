@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
-
 public class Line : MonoBehaviour
 {
     public List<Vector3> vertices = new List<Vector3>();
@@ -13,7 +11,7 @@ public class Line : MonoBehaviour
 
     private readonly int lineEndRoundness = 10;
 
-    void Update()
+    public void Generate()
     {
         if (points.Count > 1 && !ListsAreEqual(points, oldPoints))
         {
@@ -26,6 +24,28 @@ public class Line : MonoBehaviour
 
             oldPoints = new List<Vector2>(points);
         }
+    }
+
+    public void Reload()
+    {
+        oldPoints = new List<Vector2>();
+        Generate();
+    }
+
+    public void Clear()
+    {
+        MeshFilter f = GetComponent<MeshFilter>();
+        f.mesh = null;
+    }
+
+    public float[] GetDistances()
+    {
+        float[] output = new float[points.Count - 1];
+        for(int i = 0; i < points.Count - 1; i++)
+        {
+            output[i] = (points[i + 1] - points[i]).magnitude;
+        }
+        return output;
     }
 
     public bool ListsAreEqual(List<Vector2> a, List<Vector2> b)
